@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     hf_access_token: SecretStr = Field(alias="HUGGINGFACEHUB_API_TOKEN")
     openai_api_key: SecretStr = Field(alias="OPENAI_API_KEY")
     qdrant_url: str = Field(default="http://localhost:6333", alias="QDRANT_URL")
+    PROJECT_NAME: str = Field(default="integration", alias="PROJECT_NAME")
+    VERSION: str = Field(default="0.1.0", alias="PROJECT_VERSION")
+    ALLOWED_HOST_ORIGINS: str = Field(default="*", alias="ALLOWED_HOST_ORIGINS")
 
 
 @lru_cache
