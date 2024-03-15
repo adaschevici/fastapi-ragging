@@ -10,3 +10,7 @@ async def root():
 @router.post("/search")
 async def search(query: Message):
     return {"message": query}
+
+@router.post("/create-index")
+async def create_index():
+    return {"message": "Index created"}
