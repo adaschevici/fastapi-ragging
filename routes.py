@@ -10,6 +10,7 @@ router = APIRouter()
 @router.get("/")
 async def root(logger = Depends(get_logger)):
     logger.info("Hello World")
+    logger.debug("Debugging")
     return {"message": "Hello World"}
 
 @router.post("/search")
