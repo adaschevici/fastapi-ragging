@@ -1,5 +1,6 @@
 from typing import Callable
 from fastapi import FastAPI
+from starlette.requests import Request
 
 from tasks.log_handling import setup_logging, teardown_logging
 
@@ -24,4 +25,7 @@ def create_stop_app_handler(app: FastAPI) -> Callable:
         await teardown_logging(app)
 
     return stop_app
+
+def get_logger(request: Request):
+    return request.app.state._logger
 
