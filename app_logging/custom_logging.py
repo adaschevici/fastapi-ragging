@@ -8,16 +8,45 @@ from pathlib import Path
 
 from loguru import logger
 
+loglevel_mapping = {
+    50: "CRITICAL",
+    40: "ERROR",
+    30: "WARNING",
+    20: "INFO",
+    10: "DEBUG",
+    0: "NOTSET",
+}
+
+
+def configure_logging():
+    from asgi_correlation_id.context import correlation_id
+
+    def correlation_id_filter(record):
+        record["correlation_id"] = correlation_id.get()
+        return record["correlation_id"]
+
+    logger.remove()
+    set_level = os.getenv("LOG_LEVEL", logging.INFO)
+    fmt = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS zz}</green> | <level>{level: <8}</level> | <yellow>Req ID: [{correlation_id}]</yellow> | <yellow>Line {line: >4} ({file}):</yellow> <b>{message}</b>"
+    logger.add(
+        "app_logging.log",
+        format=fmt,
+        level=set_level,
+        filter=correlation_id_filter,
+        rotation="1 week",
+        retention="1 month",
+        compression="zip",
+    )
+    logger.add(
+        sys.stderr,
+        format=fmt,
+        level=set_level,
+        filter=correlation_id_filter,
+    )
+    return logger
+
 
 class InterceptHandler(logging.Handler):
-    loglevel_mapping = {
-        50: "CRITICAL",
-        40: "ERROR",
-        30: "WARNING",
-        20: "INFO",
-        10: "DEBUG",
-        0: "NOTSET",
-    }
 
     def emit(self, record):
         try:
@@ -51,9 +80,15 @@ class CustomizeLogger:
         return logger
 
     @classmethod
-    def customize_logging(cls, filepath: Path, level: str, rotation: str, retention: str, format: str):
+    def customize_logging(
+        cls, filepath: Path, level: str, rotation: str, retention: str, format: str
+    ):
+        from asgi_correlation_id import correlation_id
+
         logger.remove()
-        logger.add(sys.stdout, enqueue=True, backtrace=True, level=level.upper(), format=format)
+        logger.add(
+            sys.stdout, enqueue=True, backtrace=True, level=level.upper(), format=format
+        )
         logger.add(
             str(filepath),
             rotation=rotation,
@@ -70,7 +105,7 @@ class CustomizeLogger:
             _logger = logging.getLogger(_log)
             _logger.handlers = [InterceptHandler()]
 
-        return logger.bind(request_id=None, method=None)
+        return logger.bind(request_id=correlation_id.get(), method=None)
 
     @classmethod
     def load_logging_config(cls, config_path):
@@ -78,4 +113,3 @@ class CustomizeLogger:
         with open(config_path) as config_file:
             config = json.load(config_file)
         return config
-

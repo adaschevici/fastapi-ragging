@@ -19,6 +19,7 @@ langchain-community = "^0.0.28"
 langchain-core = "^0.1.32"
 langchain-openai = "^0.0.8"
 hypercorn = {extras = ["trio"], version = "^0.16.0"}
+asgi-correlation-id = "^4.3.1"
 
 
 [tool.poetry.group.dev.dependencies]
