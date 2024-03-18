@@ -1,6 +1,8 @@
+from functools import lru_cache
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
 
+@lru_cache(maxsize=20)
 def create_embeddings(text: str):
     model_name = "jinaai/jina-embeddings-v2-small-en"
     model_kwargs = {"device": "mps", "trust_remote_code": True}
