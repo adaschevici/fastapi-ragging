@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from qdrant_client import models
 from uuid import uuid4
 from app_logging import get_logger
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 class Indexer:
@@ -30,9 +31,7 @@ class Indexer:
 
     def index_url_document(self, urls: list[str]):
         for url in urls:
-            text = self.get_html_body_content(url)
-            embeddings = create_embeddings(text)
-            self.index_document(url, embeddings)
+            self.index_document(url)
 
     def index_document(self, url: str):
         try:
