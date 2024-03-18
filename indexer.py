@@ -1,4 +1,5 @@
 import requests
+import math
 from embedding_tools import create_embeddings
 from bs4 import BeautifulSoup
 from qdrant_client import models
@@ -36,12 +37,21 @@ class Indexer:
     def index_document(self, url: str):
         try:
             content = self.get_html_body_content(url)
-            embeddings = create_embeddings(content)
-            self.insert_embeddings(embeddings, content, url)
+            self.add_to_vector_db(content, url)
         except Exception as e:
             logger = get_logger()
             logger.error(f"Failed to index document {url} with error: {e}")
             
+
+    def add_to_vector_db(self, content: str, url: str):
+        splitter = RecursiveCharacterTextSplitter(
+            max_chunk_size=self.MODEL_CHUNK_SIZE,
+            chunk_overlap=math.floor(self.MODEL_CHUNK_SIZE * 0.1),
+        )
+        chunks = splitter.create_documents([content])
+        for chunk in chunks:
+            embedding = create_embeddings(chunk.page_content)
+            self.insert_embeddings(embedding, chunk.page_content, url)
 
     def insert_embeddings(self, embedding: list[float], content: str, url: str):
         # TODO: this probaly needs to be a batch operation
