@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app_settings import get_settings
+from config import get_settings
 from qdrant_client import QdrantClient
 
 settings = get_settings()
