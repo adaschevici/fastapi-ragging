@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from models import Message, CreateIndexPayload, SearchPayload
 from bootstrap import get_logger, get_qdrant_client
 from indexer import Indexer
+from search import Search
 
 router = APIRouter()
 
@@ -17,6 +18,8 @@ async def root(logger=Depends(get_logger)):
 async def search(
     query: SearchPayload, qdrant_client=Depends(get_qdrant_client), logger=Depends(get_logger)
 ):
+    search = Search(qdrant_client, qdrant_collection_name="web_data")
+    results = search.search(query.query)
     return {"message": query}
 
 
