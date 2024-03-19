@@ -37,3 +37,6 @@ def get_logger(request: Request = None):
         return logger
     return request.app.state._logger
 
+@lru_cache
+def get_qdrant_client(request: Request):
+    return request.app.state._qdrant_client
