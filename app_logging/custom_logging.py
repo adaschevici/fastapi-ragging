@@ -36,11 +36,13 @@ def configure_logging():
         rotation="1 week",
         retention="1 month",
         compression="zip",
+        backtrace=True,
     )
     logger.add(
         sys.stderr,
         format=fmt,
         level=set_level,
         filter=correlation_id_filter,
+        backtrace=True,
     )
     return logger

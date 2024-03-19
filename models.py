@@ -5,6 +5,7 @@ class Message(BaseModel):
 
 class CreateIndexPayload(BaseModel):
     urls: list[str]
+    collection_name: str
 
 class SearchPayload(BaseModel):
     query: str

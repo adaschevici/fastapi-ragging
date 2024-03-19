@@ -40,7 +40,6 @@ class Indexer:
     def index_document(self, url: str):
         try:
             content = self.get_html_body_content(url)
-            raise Exception("This is a test exception")
             self.add_to_vector_db(content, url)
         except Exception as e:
             logger = get_logger()
@@ -61,10 +60,11 @@ class Indexer:
         # TODO: this probaly needs to be a batch operation
         self.qdrant_client.upsert(
             collection_name=self.qdrant_collection_name,
-            ids=[uuid4().hex],
-            vectors=[embedding],
-            external_ids=[url],
-            payloads=[{"content": content}],
+            points=models.Batch(
+                ids=[uuid4().hex],
+                vectors=[embedding],
+                payloads=[{"content": content, "url": url}],
+            ),
         ) 
 
 
