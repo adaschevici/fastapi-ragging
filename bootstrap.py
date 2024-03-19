@@ -2,10 +2,10 @@ from functools import lru_cache
 from typing import Callable
 from fastapi import FastAPI
 from starlette.requests import Request
-from app_logging import logger
 
 from tasks.log_handling import setup_logging, teardown_logging
 from tasks.qdrant_handling import setup_qdrant, teardown_qdrant
+from app_logging import logger
 
 
 async def noop_setup(*args, **kwargs):

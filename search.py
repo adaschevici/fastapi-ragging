@@ -13,3 +13,11 @@ class Search:
             vectors=[embedding],
             top=limit,
         )
+
+    def query_llm(self, query: str, context: str):
+        embeddings = create_embeddings(query)
+        return self.query_qdrant(embeddings)
+
+    def search(self, user_query: str):
+        embedding = create_embeddings(user_query)
+        results = self.query_qdrant(embedding)

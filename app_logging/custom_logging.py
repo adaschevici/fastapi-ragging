@@ -28,7 +28,6 @@ def configure_logging():
     logger.remove()
     set_level = os.getenv("LOG_LEVEL", logging.INFO)
     fmt = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS zz}</green> | <level>{level: <8}</level> | <yellow>Req ID: [{correlation_id}]</yellow> | <yellow>Line {line: >4} ({file}):</yellow> <b>{message}</b>"
-    fmt_no_req_id = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS zz}</green> | <level>{level: <8}</level> | <yellow>Line {line: >4} ({file}):</yellow> <b>{message}</b>"
     logger.add(
         "app_logging.log",
         format=fmt,
@@ -39,22 +38,9 @@ def configure_logging():
         compression="zip",
     )
     logger.add(
-        "app_logging.log",
-        format=fmt_no_req_id,
-        level=set_level,
-        rotation="1 week",
-        retention="1 month",
-        compression="zip",
-    )
-    logger.add(
         sys.stderr,
         format=fmt,
         level=set_level,
         filter=correlation_id_filter,
-    )
-    logger.add(
-        sys.stderr,
-        format=fmt_no_req_id,
-        level=set_level,
     )
     return logger

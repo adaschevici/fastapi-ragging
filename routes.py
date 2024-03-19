@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from models import Message, CreateIndexPayload, SearchPayload
 from bootstrap import get_logger, get_qdrant_client
+from indexer import Indexer
 
 router = APIRouter()
 
@@ -21,6 +22,10 @@ async def search(
 
 @router.post("/create-index")
 async def create_index(
-    urls: CreateIndexPayload, qdrant_client=Depends(get_qdrant_client), logger=Depends(get_logger)
+    payload: CreateIndexPayload, qdrant_client=Depends(get_qdrant_client), logger=Depends(get_logger)
 ):
-    return {"message": "Index created"}
+    logger.info(f"Creating index for urls: {payload}")
+    indexer = Indexer(qdrant_client, qdrant_collection_name="web_data")
+    indexer.index_url_documents(payload.urls)
+    logger.info(f"Created index for documents from: {payload}")
+    return {"message": "Indexed web content successfully"}

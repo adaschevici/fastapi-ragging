@@ -31,8 +31,10 @@ class Indexer:
         inner_text = body.get_text()
         return inner_text
 
-    def index_url_document(self, urls: list[str]):
+    def index_url_documents(self, urls: list[str]):
+        logger = get_logger()
         for url in urls:
+            logger.info(f"Indexing document {url}")
             self.index_document(url)
 
     def index_document(self, url: str):
