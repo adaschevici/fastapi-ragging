@@ -4,8 +4,9 @@ from embedding_tools import create_embeddings
 from bs4 import BeautifulSoup
 from qdrant_client import models
 from uuid import uuid4
-from app_logging import get_logger
+from app_logging import logger
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from qdrant_client import QdrantClient
 
 
 class Indexer:
@@ -39,7 +40,6 @@ class Indexer:
             content = self.get_html_body_content(url)
             self.add_to_vector_db(content, url)
         except Exception as e:
-            logger = get_logger()
             logger.error(f"Failed to index document {url} with error: {e}")
             
 
@@ -65,5 +65,7 @@ class Indexer:
 
 
 if __name__ == "__main__":
-    indexer = Indexer(None, "test_collection").get_html_body_content("https://fastapi.tiangolo.com/deployment/manually/")
+    qdrant_client = QdrantClient("localhost", port=6333)
+    indexer = Indexer(qdrant_client, "test_collection")
+    indexer.index_document("https://fastapi.tiangolo.com/deployment/manually/")
     print(indexer)
