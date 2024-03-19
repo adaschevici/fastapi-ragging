@@ -1,6 +1,8 @@
+from functools import lru_cache
 from typing import Callable
 from fastapi import FastAPI
 from starlette.requests import Request
+from app_logging import logger
 
 from tasks.log_handling import setup_logging, teardown_logging
 from tasks.qdrant_handling import setup_qdrant, teardown_qdrant
@@ -29,6 +31,9 @@ def create_stop_app_handler(app: FastAPI) -> Callable:
 
     return stop_app
 
-def get_logger(request: Request):
+@lru_cache
+def get_logger(request: Request = None):
+    if request is None:
+        return logger
     return request.app.state._logger
 

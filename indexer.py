@@ -4,7 +4,7 @@ from embedding_tools import create_embeddings
 from bs4 import BeautifulSoup
 from qdrant_client import models
 from uuid import uuid4
-from app_logging import logger
+from bootstrap import get_logger
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from qdrant_client import QdrantClient
 
@@ -38,14 +38,16 @@ class Indexer:
     def index_document(self, url: str):
         try:
             content = self.get_html_body_content(url)
+            raise Exception("This is a test exception")
             self.add_to_vector_db(content, url)
         except Exception as e:
-            logger.error(f"Failed to index document {url} with error: {e}")
+            logger = get_logger()
+            logger.info(f"Failed to index document {url} with error: {e}")
             
 
     def add_to_vector_db(self, content: str, url: str):
         splitter = RecursiveCharacterTextSplitter(
-            max_chunk_size=self.MODEL_CHUNK_SIZE,
+            chunk_size=self.MODEL_CHUNK_SIZE,
             chunk_overlap=math.floor(self.MODEL_CHUNK_SIZE * 0.1),
         )
         chunks = splitter.create_documents([content])
